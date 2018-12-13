@@ -1,0 +1,15 @@
+
+ 
+jq_H2_15300180012_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.988708306142 
+validation accuracy: 0.975054229935 
+training accuracy: 0.988671003017 
+training accuracy: 0.988727407993 
+training accuracy: 0.988795259783 
+
+ 
+jq_H2_15300180012_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.988898733585 
+validation accuracy: 0.988898733585 

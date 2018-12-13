@@ -1,0 +1,52 @@
+
+
+H1_15300180012_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.998861670631 
+validation accuracy: 0.999777211494 
+
+ 
+H1_15300180012_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.998861670631 
+validation accuracy: 0.999777211494 
+
+ 
+H1_15300180012_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.0 
+validation accuracy: 0.297499039888 
+
+ 
+H1_15300180012_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.787610600563 
+validation accuracy: 0.155954075863 
+
+ 
+jq_H1_15300180012_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.996934742929 
+validation accuracy: 0.99689519577 
+
+ 
+jq_H1_15300180012b_output_naive_bayes
+Smoothing parameter: 1.0 
+training accuracy: 0.998889730135 
+validation accuracy: 0.998881996269 
+
+
+H1_15300180012_output_naive_bayes_birth_top_5
+Smoothing parameter: 1.0 
+validation accuracy: 0.115962418797 
+
+
+H1_15300180012_output_naive_bayes_birth
+Smoothing parameter: 1.0 
+training accuracy: 0.0537340441713 
+validation accuracy: 0.0542233385054
+
+ 
+H1_15300180012_output_naive_bayes_birth_top_5
+Smoothing parameter: 1.0 
+training accuracy: 0.0536803837598 

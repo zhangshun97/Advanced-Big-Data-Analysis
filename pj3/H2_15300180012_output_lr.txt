@@ -1,0 +1,17 @@
+H2_15300180012_output_logistic_regression
+Regularization(L2) parameter: 0.01 
+training accuracy: 0.963884655064 
+validation accuracy: 0.962492739024 
+test accuracy: 0.916086462613 
+Regularization(L2) parameter: 0.1 
+training accuracy: 0.964223492253 
+validation accuracy: 0.962919778141 
+test accuracy: 0.916406583302 
+Regularization(L2) parameter: 1 
+training accuracy: 0.964517293208 
+validation accuracy: 0.963296008071 
+test accuracy: 0.916683174831 
+Regularization(L2) parameter: 10 
+training accuracy: 0.964065779048 
+validation accuracy: 0.962873404677 
+test accuracy: 0.916284056781 

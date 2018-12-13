@@ -1,0 +1,9 @@
+H4_15300180012_output_naive_bayes
+Smoothing parameter: 0.1 
+training accuracy: 0.996934742929 
+validation accuracy: 0.99689519577 
+test accuracy: 0.897214053228 
+Smoothing parameter: 1.0 
+training accuracy: 0.996934742929 
+validation accuracy: 0.99689519577 
+test accuracy: 0.897214053228 

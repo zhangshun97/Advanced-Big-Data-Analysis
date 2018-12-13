@@ -1,0 +1,11 @@
+# N6
+
+## K
+[(u'FATMA', 808397), (u'AYSE', 625000), (u'EMINE', 529607), (u'HATICE', 461773), (u'ZEYNEP', 221004)]
+
+## E
+[(u'MEHMET', 821178), (u'MUSTAFA', 628867), (u'AHMET', 503835), (u'ALI', 463808), (u'HUSEYIN', 365188)]
+
+# N7
+
+

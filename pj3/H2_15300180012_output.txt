@@ -1,0 +1,6 @@
+N7_15300180012_output
+Naive Bayes parameter: 0.1 
+training accuracy: 0.96423598952 
+validation accuracy: 0.963036518296 
+test accuracy: 0.916466335133 
+Naive Bayes parameter: 1 

@@ -1,0 +1,4 @@
+H1_15300180012_output_naive_bayes
+Regularization(L2) parameter: 1.0 
+training accuracy: 0.177954947813 
+validation accuracy: 0.178303549808 

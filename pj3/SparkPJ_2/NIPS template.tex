@@ -1,0 +1,311 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2017
+%
+% to avoid loading the natbib package, add option nonatbib:
+%\usepackage[nonatbib]{nips_2017}
+
+% \usepackage{nips_2017}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+\usepackage[final]{nips_2017}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+\graphicspath{{./image/}}
+
+
+% Additional
+\usepackage{natbib}
+% Additional
+\usepackage{amsmath, amssymb}
+\usepackage{bm}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{caption, subcaption}
+\usepackage{multirow}
+
+\title{Spark Project Report 2}
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+\author{
+  Shun Zhang \\
+  School of Data Science\\
+  Fudan University\\
+  Shanghai, China \\
+  \texttt{15300180012@fudan.edu.cn} \\
+}
+
+\begin{document}
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+\section{Introduction}
+
+Recently, there have been serious data breaches in Turkey. The personal information of about 50 million Turkish citizens has been hacked onto the Internet. The information includes names, ID numbers, birth dates, parents' names, and residences. Roughly speaking, this will be the largest national database ever leaked.
+
+On April 3, 2016, a series of sensitive information, including names, ID numbers, parents' names, addresses, etc., was hacked and packaged under an IP address in Finland. The scale of these data is 6.6G and the compressed version is 1.6G. The Associated Press randomly verified the information of 10 non-public figures. Among the 10 people, 8 had the right number, and the accuracy rate was quite high. 
+
+According to data of 2014, Turkey's population is close to 76 million. This means that the number of people affected by the leak will exceed $70\%$ of the country's total population. Since the identity information of the Turkish identity card is tied with a number of government projects such as taxation, voting, social insurance, medical insurance, and military recruitment, risks such as ``identity theif'' and ``fraudulent crime'' may arise.
+
+However, as for us, undergraduates, it's interesting to do some analysis about these data with no harm.
+
+\paragraph{Remark:}
+
+\begin{itemize}
+\item \emph{All the related codes are attached in the same zip file. The file name for .py denotes which problem it solves.}
+\item \emph{The word `we' within this report actually means myself, while it's better in writing.} 
+\item \emph{Some of the experiments are just run on my laptop with a rather small dataset, which will be clearly claimed.}
+\item \emph{Some of the experiments haven't been run on test set, because of the limited resources. However, most of the models are just NaiveBayes, which do not need any parameter tuning work, so the performance on validation set will be enough. Other model like Logistic Regression has been run on test set, see Table~\ref{tab-4}.}
+\end{itemize}
+
+
+\section{Problem N6}
+
+Here our goal is to find the top-5 popular first names of males and females respectively. And our solution only requires one shuffle dependency: \emph{reduceByKey} to obtain the frequency of the names.
+
+\paragraph{results}
+
+The results is shown in Table~\ref{tab-1}
+
+\begin{table}[ht]
+\centering
+\caption{Top-5 popular first names of males and females}
+\label{tab-1}
+\begin{tabular}{cll}
+\toprule
+Name rank & Males & Females \\
+\midrule
+1 & MEHMET(821178) & FATMA(808397)  \\
+2 & MUSTAFA(628867) & AYSE(625000) \\
+3 & AHMET(503835) & EMINE(529607) \\
+4 & ALI(463808) & HATICE(461773) \\
+5 & HUSEYIN(365188) & ZEYNEP(221004) \\
+\bottomrule
+\end{tabular}
+% E: [(u'MEHMET', 821178), (u'MUSTAFA', 628867), (u'AHMET', 503835), (u'ALI', 463808), (u'HUSEYIN', 365188)]
+% K: [(u'FATMA', 808397), (u'AYSE', 625000), (u'EMINE', 529607), (u'HATICE', 461773), (u'ZEYNEP', 221004)]
+\end{table}
+
+
+\section{Problem N7}
+
+Here our goal is to find the top-3 names for every top-10 city(address city) in population. Our pipeline goes like the following:
+\begin{enumerate}
+\item \emph{map}: record $\Rightarrow$ ((address\_city, first\_name), 1)
+\item \emph{reduceByKey}: $\Rightarrow$ ((address\_city, first\_name), N)
+\item \emph{map}: ((address\_city, first\_name), N) $\Rightarrow$ (address\_city, (first\_name, N))
+\item \emph{groupByKey}: $\Rightarrow$ (address\_city, [(first\_name1, N1), (first\_name2, N2), $\cdots$])
+\item \emph{takeOrdered}: take the top-10 cities in population by sum up all the name frequencies within one city
+\end{enumerate}
+Finally, we have all the name-frequency pairs within the top-10 cities in population and we only need to take the top-3 first names for each of them. The results are shown in Table~\ref{tab-2}
+\begin{table}[ht]
+\centering
+\caption{Top-3 first names for each of top-10 cities in population}
+\label{tab-2}
+\begin{tabular}{llll}
+\toprule
+City & First popular name & Second popular name & Third popular name \\
+\midrule
+ISTANBUL & FATMA(108179) & MEHMET(98425) & MUSTAFA(88232) \\
+ANKARA & FATMA(40781) & MEHMET(35748) & MUSTAFA(35473) \\
+IZMIR & MEHMET(41396) & FATMA(35991) & MUSTAFA(32029) \\
+BURSA & FATMA(28429) & MEHMET(23435) & AYSE(23257) \\
+AYDIN & MEHMET(32003) & FATMA(24490) & AYSE(21322) \\
+ADANA & MEHMET(26165) & FATMA(22225) & MUSTAFA(18604) \\
+KONYA & MEHMET(30796) & AYSE(30040) & MUSTAFA(28603) \\
+ANTALYA & MEHMET(26998) & FATMA(25641) & AYSE(24147) \\
+MERSIN & MEHMET(22217) & FATMA(21569) & AYSE(18944) \\
+KOCAELI & FATMA(14936) & AYSE(11999) & MEHMET(11536) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Problem H1}
+
+\subsection{Analysis and insight}
+Here, our goal is to build a city prediction model, which will predict a citizen's \textbf{city} based on all the other information. Note that, here, we have three `different '\textbf{cities} within one record, \emph{birth\_city}, \emph{id\_registration\_city} and \emph{address\_city}. We will discuss the three cases respectively.
+
+\begin{itemize}
+\item \textbf{id\_registration\_city} and \textbf{address\_city}
+
+The solution for these two cases is quite the same and tricky, because the other information includes \textbf{id\_registration\_district} and \textbf{address\_district}, which implicitly contains the information of id\_registration\_city and address\_city, respectively. For example, if a Chinese citizen lives in \emph{Yangpu} district, then it is quite sure that he now lives in \emph{Shanghai}, unless somewhere else exists a district of the same name, which rarely happens. This tricky relation is further confirmed by the results in Table~\ref{tab-1-1}, with NaiveBayes model.
+\begin{table}[ht]
+\centering
+\caption{Results for Naive-Bayes models}
+\label{tab-1-1}
+\begin{tabular}{cccccc}
+\toprule
+Model & train (Top-1) & val (Top-1) & train (Top-5) & val (Top-5) & test (Top-1)\\
+\midrule
+1 & 0.9989 & 0.9989 & 1.0 & 0.9989 & 0.9315 \\
+2 & 0.9969 & 0.9969 & 1.0 & 0.9969 & 0.8972 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+where Model 1 denotes the one predicts id\_registration\_city by id\_registration\_district, Model 2 denotes the one predicts address\_city by address\_district.
+
+\item \textbf{birth\_city}
+
+In order to predict z citizen's birth city, we could model the national migration trend. To find whether citizen from city A is more likely to settle down in city B. Hence, we could predict A given B. So, we choose the \emph{id\_registration\_district} and \emph{address\_district} as our features and they are projected into a two-dimension vector, which assures that $x[0] == y[0]$ if $x$ and $y$ registered in the same district, $x[1] == y[1]$ if $x$ and $y$ now lives in the same district. Again, we build a NaiveBayes model and the results are shown in Table~\ref{tab-1-2}.
+\begin{table}[ht]
+\centering
+\caption{Results for Naive-Bayes models(on small dataset)}
+\label{tab-1-2}
+\begin{tabular}{ccc}
+\toprule
+Accuracy type & train & val \\
+\midrule
+Top-1 & 0.0537 & 0.0542 \\
+Top-5 & - & 0.1160 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The top-5 accuracy on training set is missing while we can see that the top-5 accuracy on validation set grows a little.
+
+\end{itemize}
+
+
+\section{Problem H2}
+
+\subsection{Analysis and insight}
+Here, our goal is to build a gender prediction model, which will predict a citizen's \textbf{gender} based on all the other information. An inspiration is that from Problem N6, Table~\ref{tab-1}, we can see that the first names of males and females are very different, which is also the case here in our country, where you will have a great confidence in identifying one's gender by one's first name.
+
+\subsection{Model and results}
+
+First, for a classic binary classification, an obvious way is to build a Logistic Regression model. The only feature is \emph{first name}, which is encoded into one-hot vector within our pipeline. Regularization is not included here, which will be discussed later.
+
+On the other hand, a naive but powerful model like NaiveBayes is also implemented with the same one-hot feature. The results of the two models is shown in Table~\ref{tab-3}.
+\begin{table}[ht]
+\centering
+\caption{Results for LR and NB models}
+\label{tab-3}
+\begin{tabular}{cccc}
+\toprule
+Model & training accuracy & validation accuracy & test accuracy \\
+\midrule
+LR & 0.9645 & 0.9633 & 0.9166 \\
+NB & 0.9866 & 0.9819 & 0.9387 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Remark:} 
+An interesting thing is that, with one-hot feature encoding, Logistic Regression will converge to the same as NaiveBayes. The reason is that with one-hot encoding, a certain dimension is correlated to a certain first name and because of `one-hot', we have \[
+logit(p_i) = \beta_i x_i = \beta_i\] where $x_i = 1$, $\beta_i$ is the coefficient of $x_i$, $p_i$ is the predicted probability and function $logit(x) = log(\frac{x}{1-x})$. Furthermore, the $logit$ term could be interpreted as the likelihood of the prediction to be positive. Meanwhile, for NaiveBayes, we have \[
+P(positive|x_i) \propto P(positive, x_i)\] where $P(positive|x_i)$ is the probability of being positive given $x_i$ and $P(positive, x_i)$ is the proportion of $(positive, x_i)$ among all the $(label_j, x_j)$ pairs.
+
+By comparing the two equations, it's easy to find that in this situation, the converged logistic regression with converged coefficients $\beta^*_i$ will have the property that \[
+\forall i, j, P(positive, x_i) > P(positive, x_j) ~\Rightarrow ~\beta^*_i > \beta^*_j\] which means that the prediction of a converged Logistic Regression and a NaiveBayes should be the same.
+
+And from this, we can see why regularization for logistic regression is not included.
+
+\subsection{Another interesting thing}
+
+The two models mentioned above is implemented with Dataframe-based APIs in \emph{ml} package. However, at the very first time, I used the RDD-based APIs in \emph{mllib} package, where I used a feature, different from one-hot, encoding called \emph{HashingTF}, which actually encodes a string into a alphabet frequency vector. For example, name ``ABAC'' is the same as ``BAAC'' with \emph{HashingTF}. Amazingly, with this encoding, we also obtain high accuracy as shown in Table~\ref{tab-4}.
+\begin{table}[ht]
+\centering
+\caption{Results for LR with different regularization coefficients (with HashingTF in mllib)}
+\label{tab-4}
+\begin{tabular}{lccc}
+\toprule
+Model & training accuracy & validation accuracy & test accuracy \\
+\midrule
+LR($\alpha$ = 0.01) & 0.9639 & 0.9625 & 0.9161 \\
+LR($\alpha$ = 0.1) & 0.9642 & 0.9629 & 0.9164 \\
+\textbf{LR($\alpha$ = 1)} & \textbf{0.9645} & \textbf{0.9633} & \textbf{0.9167} \\
+LR($\alpha$ = 10) & 0.9641 & 0.9629 & 0.9163 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+From the table, we could see that regularization do helps a little. And why regularization is included here is that, \emph{HashingTF} encoding only requires dimension of 26, which is much smaller than that of one-hot encoding.
+
+
+\section{Problem H3}
+
+\subsection{Analysis and insight}
+Here our goal is to find the latent pattern within the national identification number of a Turkish citizen. For lack of calculation resources, I only manage to predict the last number, the last two numbers and the last three numbers of the national ID. Apparently, predict $n$ numbers means that there are $10^n$ labels to deal with, which grows exponentially fast.
+
+\subsection{Model and results}
+Considering the possible information that determines a national ID, I take the \emph{gender}, \emph{birth date}, and \emph{id registration district} as the features. Considering one-hot encoding will have the problem of dimension explosion, so the three features are projected into a three dimension vector for model training, which assures that $x[0] == y[0]$ if $x$ and $y$ have the same gender, $x[1] == y[1]$ if $x$ and $y$ were born on the same day, $x[2] == y[2]$ if $x$ and $y$ registered in the same district.
+
+Till now, I only manage to run the model locally on  two partitions of the \emph{val\_set}, with \emph{randomSplit} to train and val. The results are shown in Table~\ref{tab-3-1}.
+\begin{table}[ht]
+\centering
+\caption{Results for NB models predicting ID(on small dataset)}
+\label{tab-3-1}
+\begin{tabular}{rcc}
+\toprule
+Prediction pattern & training accuracy & validation accuracy \\
+\midrule
+*X & 0.2012 & 0.1996 \\
+*XX & 0.0201 & 0.0198 \\
+*XXX & 0.0021 & 0.0020 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Problem H4}
+
+\subsection{Analysis and insight}
+
+Similarly, H4 also has the problem of dimension explosion because there are more than 10000 last names, which means there are more than 10000 labels and requires a quite large driver memory to build any ML model. So, here we simply select the data with Top-20 last names. Hence, our problem is reduced to a 20-label classification task. Speaking of feature, we only choose the \emph{address district}, hoping that people with the same last name tend to live together, like a family.
+
+\subsection{Model and results}
+
+Again, we build a NaiveBayes model with feature of one-hot encoding. The top-1 and top-5 accuracy are shown in Table~\ref{tab-4-1}.
+
+\begin{table}[ht]
+\centering
+\caption{Results for NB models predicting last name(on small dataset)}
+\label{tab-4-1}
+\begin{tabular}{rcc}
+\toprule
+Accuracy type & training accuracy & validation accuracy \\
+\midrule
+Top-1 & 0.1296 & 0.1294 \\
+Top-5 & 0.1375 & 0.1331 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+
+% \clearpage
+% Bibliography
+% \bibliography{biblio}
+% \bibliographystyle{plainnat}
+
+\end{document}
